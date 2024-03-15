@@ -222,6 +222,9 @@ func runControllers(ctx context.Context,
 			if err := addons.SetupClusterProxyWithManager(ctx, mgr, kubeClient, kubeInformers); err != nil {
 				klog.Fatalf("failed to start cluster proxy controller, %v", err)
 			}
+			if err := addons.SetupAPIServerNetworkProxyWithManager(ctx, mgr, kubeClient); err != nil {
+				klog.Fatalf("failed to start apiserver network proxy, %v", err)
+			}
 			startCtrlMgr = true
 		}
 

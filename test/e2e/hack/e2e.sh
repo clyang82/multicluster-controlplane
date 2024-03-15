@@ -65,7 +65,7 @@ export EXTERNAL_HOSTNAME=${external_host_ip}
 export NODE_PORT="${external_host_port}"
 export SELF_MANAGEMENT=true
 export KUBECONFIG=${kubeconfig}
-export FEATURE_GATES="DefaultClusterSet=true\,ManagedClusterAutoApproval=true\,ManagedServiceAccountEphemeralIdentity=true"
+export FEATURE_GATES="DefaultClusterSet=true\,ManagedClusterAutoApproval=true\,ManagedServiceAccountEphemeralIdentity=true\,ClusterProxy=true"
 make deploy
 unset KUBECONFIG
 unset HUB_NAME

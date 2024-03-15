@@ -24,7 +24,7 @@ spec:
           - "agent"
           - "--cluster-name=loopback"
           - "--bootstrap-kubeconfig=/spoke/bootstrap/kubeconfig"
-          - "--feature-gates=ManagedServiceAccount=true"
+          - "--feature-gates=ManagedServiceAccount=true,ClusterProxy=true"
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

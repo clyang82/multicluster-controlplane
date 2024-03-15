@@ -20,7 +20,7 @@ const (
 
 var DefaultControlPlaneFeatureGates = map[featuregate.Feature]featuregate.FeatureSpec{
 	ManagedServiceAccountEphemeralIdentity: {Default: false, PreRelease: featuregate.Alpha},
-	ClusterProxy:                           {Default: true, PreRelease: featuregate.Alpha},
+	ClusterProxy:                           {Default: false, PreRelease: featuregate.Alpha},
 }
 
 var DefaultControlPlaneAgentFeatureGates = map[featuregate.Feature]featuregate.FeatureSpec{
