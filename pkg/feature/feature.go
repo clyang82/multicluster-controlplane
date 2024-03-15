@@ -13,12 +13,17 @@ const (
 
 	// ManagedServiceAccountEphemeralIdentity allow user to set TTL on the ManagedServiceAccount resource via spec.ttlSecondsAfterCreation
 	ManagedServiceAccountEphemeralIdentity featuregate.Feature = "ManagedServiceAccountEphemeralIdentity"
+
+	// ClusterProxy will start new controllers in the controlplane process to establish reverse proxy tunnels from the managed cluster to the hub cluster
+	ClusterProxy featuregate.Feature = "ClusterProxy"
 )
 
 var DefaultControlPlaneFeatureGates = map[featuregate.Feature]featuregate.FeatureSpec{
 	ManagedServiceAccountEphemeralIdentity: {Default: false, PreRelease: featuregate.Alpha},
+	ClusterProxy:                           {Default: true, PreRelease: featuregate.Alpha},
 }
 
 var DefaultControlPlaneAgentFeatureGates = map[featuregate.Feature]featuregate.FeatureSpec{
 	ManagedServiceAccount: {Default: false, PreRelease: featuregate.Alpha},
+	ClusterProxy:          {Default: false, PreRelease: featuregate.Alpha},
 }

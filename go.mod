@@ -3,13 +3,13 @@ module open-cluster-management.io/multicluster-controlplane
 go 1.21
 
 require (
-	github.com/onsi/ginkgo/v2 v2.15.0
+	github.com/onsi/ginkgo/v2 v2.16.0
 	github.com/onsi/gomega v1.31.1
 	github.com/openshift/client-go v0.0.0-20231218140158-47f6d749b9d9
-	github.com/openshift/library-go v0.0.0-20240116081341-964bcb3f545c
+	github.com/openshift/library-go v0.0.0-20240304201338-a2ff756d8fc2
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	go.etcd.io/etcd/server/v3 v3.5.10
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.29.2
@@ -28,6 +28,7 @@ require (
 	k8s.io/metrics v0.29.2
 	k8s.io/utils v0.0.0-20240310230437-4693a0247e57
 	open-cluster-management.io/api v0.13.0
+	open-cluster-management.io/cluster-proxy v0.4.0
 	open-cluster-management.io/managed-serviceaccount v0.5.0
 	open-cluster-management.io/ocm v0.13.1-0.20240313010556-76aa752ae4e6
 	open-cluster-management.io/sdk-go v0.13.1-0.20240312062935-0163292c290b
@@ -63,7 +64,6 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
-	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
@@ -110,9 +110,9 @@ require (
 	github.com/pkg/profile v1.3.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/pquerna/cachecontrol v0.1.0 // indirect
-	github.com/prometheus/client_golang v1.18.0 // indirect
+	github.com/prometheus/client_golang v1.19.0 // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
-	github.com/prometheus/common v0.45.0 // indirect
+	github.com/prometheus/common v0.48.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/robfig/cron v1.2.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
@@ -155,7 +155,7 @@ require (
 	golang.org/x/term v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	golang.org/x/tools v0.16.1 // indirect
+	golang.org/x/tools v0.17.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20240123012728-ef4313101c80 // indirect
@@ -176,7 +176,7 @@ require (
 	k8s.io/mount-utils v0.29.2 // indirect
 	k8s.io/pod-security-admission v0.29.2 // indirect
 	open-cluster-management.io/addon-framework v0.9.1-0.20240311065811-974d3377ecbd // indirect
-	sigs.k8s.io/apiserver-network-proxy/konnectivity-client v0.28.0 // indirect
+	sigs.k8s.io/apiserver-network-proxy/konnectivity-client v0.29.0 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/kube-storage-version-migrator v0.0.6-0.20230721195810-5c8923c5ff96 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
@@ -185,6 +185,8 @@ require (
 
 // replace these repos because of imported k8s.io/kubernetes
 replace (
+	github.com/prometheus/client_golang => github.com/prometheus/client_golang v1.18.0
+	github.com/prometheus/common => github.com/prometheus/common v0.45.0
 	k8s.io/cli-runtime => k8s.io/cli-runtime v0.29.2
 	k8s.io/code-generator => k8s.io/code-generator v0.29.2
 	k8s.io/component-helpers => k8s.io/component-helpers v0.29.2

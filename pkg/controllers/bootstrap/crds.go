@@ -36,6 +36,7 @@ var baseCRDs = []string{
 	"crds/0000_03_clusters.open-cluster-management.io_placementdecisions.crd.yaml",
 	"crds/0000_05_clusters.open-cluster-management.io_addonplacementscores.crd.yaml",
 	"crds/0000_06_authentication.open-cluster-management.io_managedserviceaccounts_crd.yaml",
+	"crds/0000_07_proxy.open-cluster-management.io_managedproxyconfigurations_crd.yaml",
 }
 
 var ocmCRDs = []string{
@@ -52,6 +53,7 @@ var ocmCRDs = []string{
 	"placements.cluster.open-cluster-management.io",
 	"addonplacementscores.cluster.open-cluster-management.io",
 	"managedserviceaccounts.authentication.open-cluster-management.io",
+	"managedproxyconfigurations.proxy.open-cluster-management.io",
 }
 
 var (

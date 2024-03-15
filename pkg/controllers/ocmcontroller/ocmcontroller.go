@@ -25,6 +25,7 @@ import (
 	workv1client "open-cluster-management.io/api/client/work/clientset/versioned"
 	workinformers "open-cluster-management.io/api/client/work/informers/externalversions"
 	ocmfeature "open-cluster-management.io/api/feature"
+	proxyv1alpha1 "open-cluster-management.io/cluster-proxy/pkg/apis/proxy/v1alpha1"
 	authv1beta1 "open-cluster-management.io/managed-serviceaccount/apis/authentication/v1beta1"
 	addonhub "open-cluster-management.io/ocm/pkg/addon"
 	"open-cluster-management.io/ocm/pkg/features"
@@ -47,6 +48,7 @@ var scheme = runtime.NewScheme()
 func init() {
 	utilruntime.Must(kubescheme.AddToScheme(scheme))
 	utilruntime.Must(authv1beta1.AddToScheme(scheme))
+	utilruntime.Must(proxyv1alpha1.AddToScheme(scheme))
 }
 
 func InstallControllers(opts options.ServerRunOptions) func(<-chan struct{}, *aggregatorapiserver.Config) error {
@@ -211,6 +213,14 @@ func runControllers(ctx context.Context,
 			klog.Info("starting managed serviceaccount controller")
 			if err := addons.SetupManagedServiceAccountWithManager(ctx, mgr); err != nil {
 				klog.Fatalf("failed to start managed serviceaccount controller, %v", err)
+			}
+			startCtrlMgr = true
+		}
+
+		if features.HubMutableFeatureGate.Enabled(mcfeature.ClusterProxy) {
+			klog.Info("starting cluster proxy controller")
+			if err := addons.SetupClusterProxyWithManager(ctx, mgr, kubeClient, kubeInformers); err != nil {
+				klog.Fatalf("failed to start cluster proxy controller, %v", err)
 			}
 			startCtrlMgr = true
 		}
