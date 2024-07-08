@@ -18,7 +18,7 @@ func SetupClusterProxyWithManager(ctx context.Context, mgr ctrl.Manager, kubeCli
 
 	// loading self-signer
 	selfSigner, err := selfsigned.NewSelfSignerFromSecretOrGenerate(
-		kubeClient, "default", "cluster-proxy-signer")
+		kubeClient, ProxyNamespace, "cluster-proxy-signer")
 	if err != nil {
 		return fmt.Errorf("failed loading self-signer: %v", err)
 	}

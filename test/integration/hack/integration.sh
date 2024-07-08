@@ -17,7 +17,7 @@ source "${REPO_DIR}/test/bin/util.sh"
 ensure_clusteradm
 
 echo "Create a cluster with kind ..."
-kind create cluster --name $managed_cluster --image "kindest/node:v1.24.7" --kubeconfig $kubeconfig
+kind create cluster --name $managed_cluster --kubeconfig $kubeconfig
 
 echo "Start controlplane with command ..."
 ${REPO_DIR}/hack/start-multicluster-controlplane.sh &

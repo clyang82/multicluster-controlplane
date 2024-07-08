@@ -27,8 +27,9 @@ var (
 	signingProxyServerSecretName    = "proxy-server"
 	siginingProxyServerCaSecretName = "proxy-server-ca"
 	ProxyNamespace                  = "cluster-proxy"
-	ProxySecretsLocation            = "/etc/cluster-proxy/proxy"
-	AgentSecretsLocation            = "/etc/cluster-proxy/agent"
+	ProxySecretsLocation            = "/.ocm/cluster-proxy/proxy"
+	AgentSecretsLocation            = "/.ocm/cluster-proxy/agent"
+	proxyServerStarted              = false
 )
 
 func SetupAPIServerNetworkProxyWithManager(ctx context.Context, mgr ctrl.Manager, kubeClient *kubernetes.Clientset) error {
@@ -41,8 +42,6 @@ func SetupAPIServerNetworkProxyWithManager(ctx context.Context, mgr ctrl.Manager
 	return nil
 }
 
-var _ reconcile.Reconciler = &APIServerNetworkProxyReconciler{}
-
 type APIServerNetworkProxyReconciler struct {
 	client *kubernetes.Clientset
 }
@@ -50,8 +49,13 @@ type APIServerNetworkProxyReconciler struct {
 // SetupWithManager sets up the controller with the Manager.
 func (r *APIServerNetworkProxyReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
+		Named("apiserver-network-proxy").
 		Watches(
-			&corev1.Secret{},
+			&corev1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: ProxyNamespace,
+				},
+			},
 			&handler.EnqueueRequestForObject{},
 			builder.WithPredicates(predicate.Funcs{
 				CreateFunc: func(e event.CreateEvent) bool {
@@ -85,32 +89,32 @@ func (r *APIServerNetworkProxyReconciler) Reconcile(ctx context.Context, request
 
 	agentServerSecret, err := r.client.CoreV1().Secrets(ProxyNamespace).Get(ctx, signingAgentServerSecretName, metav1.GetOptions{})
 	if err != nil {
-		logger.Error(err, "Failed to get agent server secret")
+		logger.Error(err, "failed to get agent server secret")
 		return reconcile.Result{}, err
 	}
 
 	proxyServerSecret, err := r.client.CoreV1().Secrets(ProxyNamespace).Get(ctx, signingProxyServerSecretName, metav1.GetOptions{})
 	if err != nil {
-		logger.Error(err, "Failed to get proxy server secret")
+		logger.Error(err, "failed to get proxy server secret")
 		return reconcile.Result{}, err
 	}
 
 	proxyServerCaSecret, err := r.client.CoreV1().Secrets(ProxyNamespace).Get(ctx, siginingProxyServerCaSecretName, metav1.GetOptions{})
 	if err != nil {
-		logger.Error(err, "Failed to get proxy server ca secret")
+		logger.Error(err, "failed to get proxy server ca secret")
 		return reconcile.Result{}, err
 	}
 
 	if err = persistSecretData(agentServerSecret, AgentSecretsLocation); err != nil {
-		logger.Error(err, "Failed to persist agent server secret data")
+		logger.Error(err, "failed to persist agent server secret data")
 		return reconcile.Result{}, err
 	}
 	if err = persistSecretData(proxyServerSecret, ProxySecretsLocation); err != nil {
-		logger.Error(err, "Failed to persist proxy server secret data")
+		logger.Error(err, "failed to persist proxy server secret data")
 		return reconcile.Result{}, err
 	}
 	if err = persistSecretData(proxyServerCaSecret, ProxySecretsLocation); err != nil {
-		logger.Error(err, "Failed to persist proxy server ca secret data")
+		logger.Error(err, "failed to persist proxy server ca secret data")
 		return reconcile.Result{}, err
 	}
 
@@ -125,9 +129,16 @@ func (r *APIServerNetworkProxyReconciler) Reconcile(ctx context.Context, request
 	o.ProxyStrategies = "destHost"
 	o.ServerCount = 1
 
-	if err = proxy.Run(o, ctx.Done()); err != nil {
-		logger.Error(err, "Failed to run proxy server")
-		return reconcile.Result{}, err
+	//TODO: restart the server if the certs is updated
+	stopChannel := make(chan struct{})
+	if !proxyServerStarted {
+		go func() {
+			defer close(stopChannel)
+			proxyServerStarted = true
+			if err = proxy.Run(o, stopChannel); err != nil {
+				logger.Error(err, "failed to run proxy server")
+			}
+		}()
 	}
 
 	return reconcile.Result{}, nil
@@ -137,8 +148,11 @@ func persistSecretData(secret *corev1.Secret, location string) error {
 	if secret.Data == nil {
 		return fmt.Errorf("secret data is nil")
 	}
+	if err := os.MkdirAll(location, 0700); err != nil {
+		return err
+	}
 	for k, v := range secret.Data {
-		err := os.WriteFile(fmt.Sprintf("%s/%s", location, k), v, 0420)
+		err := os.WriteFile(fmt.Sprintf("%s/%s", location, k), v, 0700)
 		if err != nil {
 			return err
 		}

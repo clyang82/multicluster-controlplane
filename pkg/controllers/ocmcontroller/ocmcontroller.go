@@ -17,6 +17,7 @@ import (
 	"k8s.io/client-go/metadata"
 	"k8s.io/client-go/rest"
 	"k8s.io/klog/v2"
+	"k8s.io/klog/v2/textlogger"
 	aggregatorapiserver "k8s.io/kube-aggregator/pkg/apiserver"
 	addonclient "open-cluster-management.io/api/client/addon/clientset/versioned"
 	addoninformers "open-cluster-management.io/api/client/addon/informers/externalversions"
@@ -197,6 +198,8 @@ func runControllers(ctx context.Context,
 	go func() {
 		startCtrlMgr := false
 
+		logger := textlogger.NewLogger(textlogger.NewConfig())
+		ctrl.SetLogger(logger)
 		mgr, err := ctrl.NewManager(restConfig, ctrl.Options{
 			Scheme: scheme,
 			Metrics: metricsserver.Options{
@@ -205,7 +208,7 @@ func runControllers(ctx context.Context,
 			Logger: ctrl.Log.WithName("ctrl-runtime-manager"),
 		})
 		if err != nil {
-			klog.Fatalf("unable to start manager %v", err)
+			klog.Fatalf("unable to create manager %v", err)
 		}
 
 		if features.HubMutableFeatureGate.Enabled(mcfeature.ManagedServiceAccountEphemeralIdentity) {
